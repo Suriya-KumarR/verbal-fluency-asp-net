@@ -16,17 +16,24 @@ builder.Services.AddSwaggerGen(); // Add Swagger
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAllOrigins", policy =>
+    options.AddPolicy("VueApp", policy =>
     {
-        policy.AllowAnyOrigin()
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+        policy.WithOrigins(
+                "http://localhost:8080",
+                "http://192.168.86.77:8080",
+                "http://127.0.0.1:8080",
+                "https://verbal-fluency-wpxb.vercel.app/"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials()
+            .WithExposedHeaders("Content-Disposition"); // Needed for file downloads
     });
 });
 
 var app = builder.Build();
-app.UseCors("AllowAllOrigins");
-
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+app.Run($"http://0.0.0.0:{port}");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
